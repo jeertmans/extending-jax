@@ -1,0 +1,27 @@
+[build-system]
+requires = ["maturin>=1.7,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "rms_norm"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = ["version"]
+dependencies = [
+    "jax>=0.4.31",
+]
+[tool.maturin]
+bindings = "pyo3"
+features = ["extension-module"]
+module-name = "rms_norm._rms_norm"
+python-source = "python"
+
+[tool.uv]
+dev-dependencies = [
+    "chex>=0.1.87",
+    "pytest>=8.3.3",
+]
