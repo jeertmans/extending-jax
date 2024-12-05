@@ -1,32 +1,38 @@
-use pyo3::prelude::*;
+use pyo3::{prelude::*, types::PyCapsule};
 
-fn xla_rms_norm<T: xla::NativeType>(
-    builder: &xla::XlaBuilder,
-    eps: T,
-    x: &xla::XlaOp,
-) -> xla::Result<xla::XlaOp> {
-    let eps = builder.c0(eps)?.convert(x.ty()?)?;
-    let norm_x = (x * x)?.reduce_mean(&[-1], true)?;
-    let x_normalized = (x * (norm_x + eps)?.rsqrt()?)?;
-    Ok(x_normalized)
+fn rms_norm(eps: f32, x: &[f32], y: &mut [f32]) {
+    debug_assert_eq!(x.len(), y.len(), "x and y must have the same length");
+    let mut sm = 0f32;
+    let size = x.len();
+    for xi in x {
+        sm += xi * xi;
+    }
+    let scale = (sm / (size as f32) + eps).sqrt().recip();
+
+    for i in 0..size {
+        y[i] = x[i] * scale;
+    }
 }
 
-#[pyfunction(name = "rms_norm")]
-fn py_rms_norm<'py>(eps: f32, x: &'py xla::PjRtBuffer, y: &'py xla::PjRtBuffer) -> PyResult<()> {
-    let builder = xla::XlaBuilder::new("rms_norm");
-    let client = xla::PjRtClient::cpu()?;
-    let input_shape = x.on_device_shape()?;
-    let input_param = builder.parameter_s(0, &input_shape, "x")?;
-    let op = xla_rms_norm(&builder, eps, &input_param)?;
-    let comp = op.build()?;
-    let exe = client.compile(&comp)?;
-    let _result = exe.execute_b(&[x, y])?;
+#[cxx::bridge]
+mod ffi {
+    extern "Rust" {
+        fn rms_norm(eps: f32, x: &[f32], y: &mut [f32]) -> ();
+    }
 
-    Ok(())
+    unsafe extern "C++" {
+        include!("rms-norm/include/ffi.h");
+
+        type XLA_FFI_Error;
+        type XLA_FFI_CallFrame;
+
+        unsafe fn RmsNorm(call_frame: *mut XLA_FFI_CallFrame) -> *mut XLA_FFI_Error;
+    }
 }
 
 #[pymodule]
 fn _rms_norm(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(py_rms_norm, m)?)?;
+    let ptr: unsafe fn(*mut ffi::XLA_FFI_CallFrame) -> *mut ffi::XLA_FFI_Error = ffi::RmsNorm;
+    m.add("rms_norm", PyCapsule::new(m.py(), ptr, None)?)?;
     Ok(())
 }

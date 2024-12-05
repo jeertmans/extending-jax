@@ -1,6 +1,6 @@
 [package]
-name = "rms_norm"
-version = "0.5.0"
+name = "rms-norm"
+version = "0.1.0"
 edition = "2021"
 
 [lib]
@@ -8,8 +8,12 @@ name = "_rms_norm"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = {version = "0.22", features = ["auto-initialize"]}
-xla = { path = "xla-rs", features = ["pyo3"] }
+cxx = "1.0"
+pyo3 = {version = "0.23", features = ["auto-initialize"]}
+
+[build-dependencies]
+cxx-build = "1.0"
+pyo3-build-config = "0.23"
 
 [features]
 extension-module = ["pyo3/extension-module"]

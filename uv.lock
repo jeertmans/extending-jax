@@ -291,7 +291,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "jax", specifier = ">=0.4.31" }]
+requires-dist = [{ name = "jax", specifier = ">=0.4.35" }]
 
 [package.metadata.requires-dev]
 dev = [

@@ -1,3 +1,0 @@
-[submodule "xla-rs"]
-	path = xla-rs
-	url = https://github.com/jeertmans/xla-rs.git

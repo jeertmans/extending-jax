@@ -1,5 +1,5 @@
 [build-system]
-requires = ["maturin>=1.7,<2.0"]
+requires = ["maturin>=1.7,<2.0", "jax>=0.4.35"]
 build-backend = "maturin"
 
 [project]
@@ -12,9 +12,10 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-    "jax>=0.4.31",
+    "jax>=0.4.35",
 ]
 [tool.maturin]
+#audit-wheel = "skip"
 bindings = "pyo3"
 features = ["extension-module"]
 module-name = "rms_norm._rms_norm"
