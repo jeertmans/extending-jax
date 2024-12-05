@@ -1,3 +1,5 @@
+use std::ffi::CString;
+
 use pyo3::{prelude::*, types::PyCapsule};
 
 fn rms_norm(eps: f32, x: &[f32], y: &mut [f32]) {
@@ -32,7 +34,8 @@ mod ffi {
 
 #[pymodule]
 fn _rms_norm(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    let ptr: unsafe fn(*mut ffi::XLA_FFI_CallFrame) -> *mut ffi::XLA_FFI_Error = ffi::RmsNorm;
-    m.add("rms_norm", PyCapsule::new(m.py(), ptr, None)?)?;
+    let f: fn(*mut ffi::XLA_FFI_CallFrame) -> *mut ffi::XLA_FFI_Error =
+        |call_frame| unsafe { ffi::RmsNorm(call_frame) };
+    m.add("rms_norm", PyCapsule::new(m.py(), f, None)?)?;
     Ok(())
 }
