@@ -19,6 +19,28 @@ permissions:
   contents: read
 
 jobs:
+  pytest:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        pyversion: ['3.10', '3.11', '3.12', '3.13']
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        enable-cache: true
+
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Run tests
+      run: uv run --python ${{ matrix.pyversion }} --frozen pytest
+
   linux:
     runs-on: ${{ matrix.platform.runner }}
     strategy:
