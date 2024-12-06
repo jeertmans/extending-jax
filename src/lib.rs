@@ -19,6 +19,7 @@ fn rms_norm(eps: f32, x: &[f32], y: &mut [f32]) {
 #[cxx::bridge]
 mod ffi {
     extern "Rust" {
+        // Expose to C++ our Rust function
         fn rms_norm(eps: f32, x: &[f32], y: &mut [f32]) -> ();
     }
 
@@ -28,6 +29,7 @@ mod ffi {
         type XLA_FFI_Error;
         type XLA_FFI_CallFrame;
 
+        // This is the C++ XLA compatible wrapper around our 'rms_norm' Rust function
         unsafe fn RmsNorm(call_frame: *mut XLA_FFI_CallFrame) -> *mut XLA_FFI_Error;
     }
 }

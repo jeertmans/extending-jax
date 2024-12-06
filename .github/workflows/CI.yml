@@ -25,6 +25,8 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         pyversion: ['3.10', '3.11', '3.12', '3.13']
+    env:
+      DEBUG: 1  # Build C++ with debug symbols
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout repository
