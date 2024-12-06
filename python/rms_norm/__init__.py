@@ -21,10 +21,9 @@ import jax.extend as jex
 import jax.numpy as jnp
 import numpy as np
 
-import rms_norm._rms_norm
+import rms_norm._rms_norm as rms_norm_lib
 
-jex.ffi.register_ffi_target("rms_norm", rms_norm._rms_norm.rms_norm, platform="cpu")
-
+jex.ffi.register_ffi_target("rms_norm", rms_norm_lib.rms_norm, platform="cpu")
 
 def rms_norm(x, eps=1e-5):
     # We only implemented the `float32` version of this function, so we start by

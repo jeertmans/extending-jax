@@ -37,8 +37,7 @@ mod ffi {
 #[pymodule]
 fn _rms_norm(m: &Bound<'_, PyModule>) -> PyResult<()> {
     let name = CString::new("rms_norm").unwrap();
-    let f: fn(*mut ffi::XLA_FFI_CallFrame) -> *mut ffi::XLA_FFI_Error =
-        |call_frame| unsafe { ffi::RmsNorm(call_frame) };
+    let f: unsafe fn(*mut ffi::XLA_FFI_CallFrame) -> *mut ffi::XLA_FFI_Error = ffi::RmsNorm;
     m.add("rms_norm", PyCapsule::new(m.py(), f, Some(name))?)?;
     Ok(())
 }
