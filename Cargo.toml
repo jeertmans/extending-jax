@@ -9,7 +9,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 cxx = "1.0"
-pyo3 = {version = "0.23", features = ["auto-initialize"]}
+pyo3 = {version = "0.24", features = ["auto-initialize"]}
 
 [build-dependencies]
 cxx-build = "1.0"
