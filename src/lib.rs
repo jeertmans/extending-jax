@@ -1,5 +1,7 @@
 use std::ffi::CString;
 
+#[cfg(feature = "numpy")]
+use numpy::{PyArray1, PyArrayMethods, PyReadonlyArray1, PyUntypedArrayMethods};
 use pyo3::{prelude::*, types::PyCapsule};
 
 fn rms_norm(eps: f32, x: &[f32], y: &mut [f32]) {
@@ -14,6 +16,20 @@ fn rms_norm(eps: f32, x: &[f32], y: &mut [f32]) {
     for i in 0..size {
         y[i] = x[i] * scale;
     }
+}
+
+#[cfg(feature = "numpy")]
+#[pyfunction(name = "rms_norm_numpy")]
+fn rms_norm_numpy<'py>(
+    py: Python<'py>,
+    x: PyReadonlyArray1<'py, f32>,
+    eps: f32,
+) -> Bound<'py, PyArray1<f32>> {
+    let y = unsafe { PyArray1::<f32>::new(py, x.len(), x.is_fortran_contiguous()) };
+    rms_norm(eps, x.as_slice().unwrap(), unsafe {
+        y.as_slice_mut().unwrap()
+    });
+    y
 }
 
 #[cxx::bridge]
@@ -34,10 +50,28 @@ mod ffi {
     }
 }
 
+fn encapsulate_ffi_call<'py>(
+    py: Python<'py>,
+    ffi_call: unsafe fn(*mut ffi::XLA_FFI_CallFrame) -> *mut ffi::XLA_FFI_Error,
+    name: Option<CString>,
+) -> PyResult<Bound<'py, PyCapsule>> {
+    let f: unsafe fn(*mut ffi::XLA_FFI_CallFrame) -> *mut ffi::XLA_FFI_Error = ffi_call;
+    PyCapsule::new(py, f, name)
+}
+
+#[pyfunction(name = "rms_norm")]
+fn rms_norm_jax<'py>(py: Python<'py>) -> PyResult<Bound<'py, PyCapsule>> {
+    // Register the ffi call
+    encapsulate_ffi_call(py, ffi::RmsNorm, Some(CString::new("rms_norm").unwrap()))
+}
+
 #[pymodule]
 fn _rms_norm(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    let name = CString::new("rms_norm").unwrap();
-    let f: unsafe fn(*mut ffi::XLA_FFI_CallFrame) -> *mut ffi::XLA_FFI_Error = ffi::RmsNorm;
-    m.add("rms_norm", PyCapsule::new(m.py(), f, Some(name))?)?;
+    m.add_function(wrap_pyfunction!(rms_norm_jax, m)?)?;
+
+    // This is just to compare the JAX version with the Rust-NumPy version
+    #[cfg(feature = "numpy")]
+    m.add_function(wrap_pyfunction!(rms_norm_numpy, m)?)?;
+
     Ok(())
 }

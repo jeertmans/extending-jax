@@ -23,7 +23,9 @@ import numpy as np
 
 import rms_norm._rms_norm as rms_norm_lib
 
-jex.ffi.register_ffi_target("rms_norm", rms_norm_lib.rms_norm, platform="cpu")
+
+jex.ffi.register_ffi_target("rms_norm", rms_norm_lib.rms_norm(), platform="cpu")
+
 
 def rms_norm(x, eps=1e-5):
     # We only implemented the `float32` version of this function, so we start by
@@ -52,3 +54,11 @@ def rms_norm(x, eps=1e-5):
     # type (which corresponds to numpy's `float32` type), and it must be a
     # static parameter (i.e. not a JAX array).
     return call(x, eps=np.float32(eps))
+
+
+if hasattr(rms_norm_lib, "rms_norm_numpy"):
+
+    def rms_norm_numpy(x, eps=1e-5):
+        x = np.asarray(x).astype(np.float32)
+        y = rms_norm_lib.rms_norm_numpy(x, eps)
+        return jnp.asarray(y)

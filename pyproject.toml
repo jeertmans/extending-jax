@@ -1,5 +1,5 @@
 [build-system]
-requires = ["maturin>=1.7,<2.0", "jax>=0.4.35"]
+requires = ["maturin>=1.7,<2.0", "jax>=0.5.0"]
 build-backend = "maturin"
 
 [project]
@@ -12,7 +12,7 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-    "jax>=0.4.35",
+    "jax>=0.5.0",
 ]
 [tool.maturin]
 #audit-wheel = "skip"

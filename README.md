@@ -5,7 +5,7 @@ Experiments on porting the C++ *Extending JAX* tutorial to Rust.
 
 ## Building
 
-To build this project, you need Rust and uv (or any Python project builder).
+To build this project, you need Rust and uv (or any Python project manager).
 
 ```bash
 cargo check  # To check that it compiles (you might need to activate local venv)

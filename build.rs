@@ -13,7 +13,7 @@ fn main() {
             .unwrap_or_else(|| "python3".to_owned()),
     )
     .arg("-c")
-    .arg("from jax.extend import ffi;print(ffi.include_dir())")
+    .arg("from jax.ffi import include_dir;print(include_dir())")
     .output()
     .expect("failed to execute process");
 
