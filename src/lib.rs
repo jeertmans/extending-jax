@@ -1,7 +1,7 @@
 use std::ffi::CString;
 
 #[cfg(feature = "numpy")]
-use numpy::{PyArray1, PyArrayMethods, PyReadonlyArray1, PyUntypedArrayMethods};
+use numpy::{PyArray1, PyReadonlyArray1, PyUntypedArrayMethods};
 use pyo3::{prelude::*, types::PyCapsule};
 
 fn rms_norm(eps: f32, x: &[f32], y: &mut [f32]) {
@@ -24,12 +24,10 @@ fn rms_norm_numpy<'py>(
     py: Python<'py>,
     x: PyReadonlyArray1<'py, f32>,
     eps: f32,
-) -> Bound<'py, PyArray1<f32>> {
-    let y = unsafe { PyArray1::<f32>::new(py, x.len(), x.is_fortran_contiguous()) };
-    rms_norm(eps, x.as_slice().unwrap(), unsafe {
-        y.as_slice_mut().unwrap()
-    });
-    y
+) -> PyResult<Bound<'py, PyArray1<f32>>> {
+    let mut y = Vec::with_capacity(x.len());
+    rms_norm(eps, x.as_slice()?, y.as_mut_slice());
+    Ok(PyArray1::from_vec(py, y))
 }
 
 #[cxx::bridge]
