@@ -1,4 +1,4 @@
-use std::ffi::CString;
+use std::ffi::c_void;
 
 #[cfg(feature = "numpy")]
 use numpy::{PyArray1, PyReadonlyArray1, PyUntypedArrayMethods};
@@ -48,19 +48,23 @@ mod ffi {
     }
 }
 
-fn encapsulate_ffi_call<'py>(
-    py: Python<'py>,
-    ffi_call: unsafe fn(*mut ffi::XLA_FFI_CallFrame) -> *mut ffi::XLA_FFI_Error,
-    name: Option<CString>,
-) -> PyResult<Bound<'py, PyCapsule>> {
-    let f: unsafe fn(*mut ffi::XLA_FFI_CallFrame) -> *mut ffi::XLA_FFI_Error = ffi_call;
-    PyCapsule::new(py, f, name)
-}
-
 #[pyfunction(name = "rms_norm")]
-fn rms_norm_jax<'py>(py: Python<'py>) -> PyResult<Bound<'py, PyCapsule>> {
-    // Register the ffi call
-    encapsulate_ffi_call(py, ffi::RmsNorm, Some(CString::new("rms_norm").unwrap()))
+fn rms_norm_jax(py: Python<'_>) -> PyResult<Py<PyCapsule>> {
+    // Get the function pointer as a raw pointer
+    let fn_ptr: *mut c_void = ffi::RmsNorm as *mut c_void;
+
+    // Give a NULL name for the capsule
+    let name = std::ptr::null();
+
+    unsafe {
+        let capsule = pyo3::ffi::PyCapsule_New(fn_ptr, name, None);
+        if capsule.is_null() {
+            return Err(pyo3::exceptions::PyRuntimeError::new_err(
+                "Failed to create PyCapsule",
+            ));
+        }
+        Ok(Py::from_owned_ptr(py, capsule))
+    }
 }
 
 #[pymodule]

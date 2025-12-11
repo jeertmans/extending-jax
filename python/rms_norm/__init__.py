@@ -17,14 +17,12 @@
 # limitations under the License.
 
 import jax
-import jax.extend as jex
 import jax.numpy as jnp
 import numpy as np
 
 import rms_norm._rms_norm as rms_norm_lib
 
-
-jex.ffi.register_ffi_target("rms_norm", rms_norm_lib.rms_norm(), platform="cpu")
+jax.ffi.register_ffi_target("rms_norm", rms_norm_lib.rms_norm(), platform="cpu")
 
 
 def rms_norm(x, eps=1e-5):
@@ -36,7 +34,7 @@ def rms_norm(x, eps=1e-5):
     if x.dtype != jnp.float32:
         raise ValueError("Only the float32 dtype is implemented by rms_norm")
 
-    call = jex.ffi.ffi_call(
+    call = jax.ffi.ffi_call(
         # The target name must be the same string as we used to register the target
         # above in `register_custom_call_target`
         "rms_norm",

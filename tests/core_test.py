@@ -1,5 +1,3 @@
-import pytest
-
 import jax.numpy as jnp
 from jax import Array
 import chex

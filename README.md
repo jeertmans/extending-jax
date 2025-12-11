@@ -2,6 +2,11 @@
 
 Experiments on porting the C++ *Extending JAX* tutorial to Rust.
 
+## Related Links
+
+- [dfm/extending-jax](https://github.com/dfm/extending-jax): Extending JAX with custom C++ and CUDA code
+- JAX: [Foreign function interface (FFI)](https://docs.jax.dev/en/latest/ffi.html)
+- [End-to-end example usage for JAX's foreign function interface](https://github.com/jax-ml/jax/tree/main/examples/ffi)
 
 ## Building
 
@@ -14,7 +19,6 @@ uv sync --force-reinstall  # To force rebuilding Rust / C++ files
 uv run pytest  # To run tests
 uv run python -c "from rms_norm import rms_norm as f;import jax.numpy as jnp;print(f(jnp.ones(4)))"  # To test function
 ```
-
 ## Contributing
 
 Unfortunately, my available time for this experiment is limited. If you want to contribute, **please** feel free to open issues or pull requests!

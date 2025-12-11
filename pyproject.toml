@@ -1,10 +1,10 @@
 [build-system]
-requires = ["maturin>=1.7,<2.0", "jax>=0.5.0"]
+requires = ["maturin>=1.7,<2.0", "jax>=0.8.0"]
 build-backend = "maturin"
 
 [project]
 name = "rms_norm"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
@@ -12,7 +12,7 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-    "jax>=0.5.0",
+    "jax>=0.8.0",
 ]
 [tool.maturin]
 #audit-wheel = "skip"
@@ -21,8 +21,8 @@ features = ["extension-module"]
 module-name = "rms_norm._rms_norm"
 python-source = "python"
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "chex>=0.1.87",
     "pytest>=8.3.3",
 ]
