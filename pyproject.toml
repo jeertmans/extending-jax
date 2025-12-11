@@ -26,3 +26,6 @@ dev = [
     "chex>=0.1.87",
     "pytest>=8.3.3",
 ]
+
+[tool.ruff.lint]
+extend-select = ["UP"]
