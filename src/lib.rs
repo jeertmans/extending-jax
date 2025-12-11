@@ -1,5 +1,4 @@
 use std::ffi::c_void;
-use std::ffi::CStr;
 
 #[cfg(feature = "numpy")]
 use numpy::{PyArray1, PyReadonlyArray1, PyUntypedArrayMethods};
@@ -51,19 +50,7 @@ mod ffi {
 
 #[pyfunction(name = "rms_norm")]
 fn rms_norm_jax(py: Python<'_>) -> PyResult<Bound<'_, PyCapsule>> {
-    let fn_ptr: *mut c_void = ffi::RmsNorm as *mut c_void;
-    let name = std::ptr::null();
-
-    unsafe {
-        let capsule = pyo3::ffi::PyCapsule_New(fn_ptr, name, None);
-        if capsule.is_null() {
-            return Err(pyo3::exceptions::PyRuntimeError::new_err(
-                "Failed to create PyCapsule",
-            ));
-        }
-        let any: Bound<'_, PyAny> = Bound::from_owned_ptr(py, capsule);
-        Ok(any.downcast_into_unchecked::<PyCapsule>())
-    }
+    unsafe { PyCapsule::new_pointer(py, ffi::RmsNorm as *mut c_void, None) }
 }
 
 #[pymodule]
