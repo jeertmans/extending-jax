@@ -1,5 +1,4 @@
 use std::ffi::c_void;
-use std::ffi::CStr;
 
 #[cfg(feature = "numpy")]
 use numpy::{PyArray1, PyReadonlyArray1, PyUntypedArrayMethods};
@@ -62,7 +61,7 @@ fn rms_norm_jax(py: Python<'_>) -> PyResult<Bound<'_, PyCapsule>> {
             ));
         }
         let any: Bound<'_, PyAny> = Bound::from_owned_ptr(py, capsule);
-        Ok(any.downcast_into_unchecked::<PyCapsule>())
+        Ok(any.cast_into_unchecked::<PyCapsule>())
     }
 }
 

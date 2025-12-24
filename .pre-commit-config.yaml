@@ -20,35 +20,11 @@ repos:
   - id: ruff-check
     args: [--fix]
   - id: ruff-format
-- repo: local
+- repo: https://github.com/doublify/pre-commit-rust
+  rev: v1.0
   hooks:
-  - id: cargo-check
-    name: cargo check
-    description: Check that Rust project can compile
-    entry: cargo +stable check
-    language: system
-    types: [rust]
-    pass_filenames: false
-  - id: cargo-fmt
-    name: cargo fmt
-    description: Format files with cargo fmt
-    entry: cargo +nightly fmt --
-    language: system
-    types: [rust]
-  - id: cargo-clippy
-    name: cargo clippy
-    description: Check files with cargo clippy
-    entry: cargo +stable clippy
-    language: system
-    types: [rust]
-    pass_filenames: false
-- repo: https://github.com/codespell-project/codespell
-  rev: v2.4.1
-  hooks:
-  - id: codespell
-    additional_dependencies:
-    - tomli
-    exclude_types: [jupyter]  # GitHub action will run on Notebooks
+  - id: fmt
+  - id: clippy
 - repo: https://github.com/astral-sh/uv-pre-commit
   rev: 0.9.16
   hooks:
