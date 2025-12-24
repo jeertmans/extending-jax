@@ -25,7 +25,8 @@ fn rms_norm_numpy<'py>(
     x: PyReadonlyArray1<'py, f32>,
     eps: f32,
 ) -> PyResult<Bound<'py, PyArray1<f32>>> {
-    let mut y = Vec::with_capacity(x.len());
+    let len = x.len();
+    let mut y = vec![0.0f32; len];  // Initialize with actual elements, not just capacity
     rms_norm(eps, x.as_slice()?, y.as_mut_slice());
     Ok(PyArray1::from_vec(py, y))
 }
