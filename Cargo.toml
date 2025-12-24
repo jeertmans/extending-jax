@@ -20,9 +20,3 @@ name = "_rms_norm"
 edition = "2021"
 name = "rms-norm"
 version = "0.1.0"
-
-[patch.crates-io]
-pyo3 = {git = "https://github.com/lmmx/pyo3", branch = "raw-pointer-capsule"}
-pyo3-ffi = {git = "https://github.com/lmmx/pyo3", branch = "raw-pointer-capsule"}
-pyo3-macros = {git = "https://github.com/lmmx/pyo3", branch = "raw-pointer-capsule"}
-pyo3-macros-backend = {git = "https://github.com/lmmx/pyo3", branch = "raw-pointer-capsule"}
