@@ -1,28 +1,32 @@
 [build-system]
-requires = ["maturin>=1.7,<2.0", "jax>=0.5.0"]
 build-backend = "maturin"
+requires = ["maturin>=1.7,<2.0", "jax>=0.8.0"]
+
+[dependency-groups]
+dev = [
+  "chex>=0.1.87",
+  "pytest>=8.3.3",
+]
 
 [project]
-name = "rms_norm"
-requires-python = ">=3.10"
 classifiers = [
-    "Programming Language :: Rust",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy",
+  "Programming Language :: Rust",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "jax>=0.8.0",
 ]
 dynamic = ["version"]
-dependencies = [
-    "jax>=0.5.0",
-]
+name = "rms_norm"
+requires-python = ">=3.11"
+
 [tool.maturin]
-#audit-wheel = "skip"
+# audit-wheel = "skip"
 bindings = "pyo3"
 features = ["extension-module"]
 module-name = "rms_norm._rms_norm"
 python-source = "python"
 
-[tool.uv]
-dev-dependencies = [
-    "chex>=0.1.87",
-    "pytest>=8.3.3",
-]
+[tool.ruff.lint]
+extend-select = ["UP"]

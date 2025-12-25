@@ -1,4 +1,4 @@
-use std::ffi::CString;
+use std::ffi::c_void;
 
 #[cfg(feature = "numpy")]
 use numpy::{PyArray1, PyReadonlyArray1, PyUntypedArrayMethods};
@@ -25,7 +25,8 @@ fn rms_norm_numpy<'py>(
     x: PyReadonlyArray1<'py, f32>,
     eps: f32,
 ) -> PyResult<Bound<'py, PyArray1<f32>>> {
-    let mut y = Vec::with_capacity(x.len());
+    let len = x.len();
+    let mut y = vec![0.0f32; len];  // Initialize with actual elements, not just capacity
     rms_norm(eps, x.as_slice()?, y.as_mut_slice());
     Ok(PyArray1::from_vec(py, y))
 }
@@ -48,19 +49,21 @@ mod ffi {
     }
 }
 
-fn encapsulate_ffi_call<'py>(
-    py: Python<'py>,
-    ffi_call: unsafe fn(*mut ffi::XLA_FFI_CallFrame) -> *mut ffi::XLA_FFI_Error,
-    name: Option<CString>,
-) -> PyResult<Bound<'py, PyCapsule>> {
-    let f: unsafe fn(*mut ffi::XLA_FFI_CallFrame) -> *mut ffi::XLA_FFI_Error = ffi_call;
-    PyCapsule::new(py, f, name)
-}
-
 #[pyfunction(name = "rms_norm")]
-fn rms_norm_jax<'py>(py: Python<'py>) -> PyResult<Bound<'py, PyCapsule>> {
-    // Register the ffi call
-    encapsulate_ffi_call(py, ffi::RmsNorm, Some(CString::new("rms_norm").unwrap()))
+fn rms_norm_jax(py: Python<'_>) -> PyResult<Bound<'_, PyCapsule>> {
+    let fn_ptr: *mut c_void = ffi::RmsNorm as *mut c_void;
+    let name = std::ptr::null();
+
+    unsafe {
+        let capsule = pyo3::ffi::PyCapsule_New(fn_ptr, name, None);
+        if capsule.is_null() {
+            return Err(pyo3::exceptions::PyRuntimeError::new_err(
+                "Failed to create PyCapsule",
+            ));
+        }
+        let any: Bound<'_, PyAny> = Bound::from_owned_ptr(py, capsule);
+        Ok(any.cast_into_unchecked::<PyCapsule>())
+    }
 }
 
 #[pymodule]

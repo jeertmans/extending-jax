@@ -1,22 +1,22 @@
-[package]
-name = "rms-norm"
-version = "0.1.0"
-edition = "2021"
-
-[lib]
-name = "_rms_norm"
-crate-type = ["cdylib"]
+[build-dependencies]
+cxx-build = "1.0"
+pyo3-build-config = "0.27"
 
 [dependencies]
 cxx = "1.0"
-numpy = {version = "0.25", optional = true}
-pyo3 = {version = "0.25", features = ["auto-initialize"]}
-
-[build-dependencies]
-cxx-build = "1.0"
-pyo3-build-config = "0.25"
+numpy = {version = "0.27", optional = true}
+pyo3 = {version = "0.27", features = ["auto-initialize"]}
 
 [features]
 default = ["numpy"]
 extension-module = ["pyo3/extension-module"]
 numpy = ["dep:numpy", "pyo3/extension-module"]
+
+[lib]
+crate-type = ["cdylib"]
+name = "_rms_norm"
+
+[package]
+edition = "2021"
+name = "rms-norm"
+version = "0.1.0"

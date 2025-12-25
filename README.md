@@ -2,6 +2,11 @@
 
 Experiments on porting the C++ *Extending JAX* tutorial to Rust.
 
+## Related Links
+
+- [dfm/extending-jax](https://github.com/dfm/extending-jax): Extending JAX with custom C++ and CUDA code
+- JAX: [Foreign function interface (FFI)](https://docs.jax.dev/en/latest/ffi.html)
+- [End-to-end example usage for JAX's foreign function interface](https://github.com/jax-ml/jax/tree/main/examples/ffi)
 
 ## Building
 
