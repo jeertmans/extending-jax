@@ -1,7 +1,6 @@
+import chex
 import jax.numpy as jnp
 from jax import Array
-import chex
-
 from rms_norm import rms_norm
 
 
